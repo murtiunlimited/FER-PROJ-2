@@ -86,17 +86,17 @@ pip install -r requirements.txt
 
 #  OpenCV Version (Desktop Webcam)
 
-### Step 1: Preprocess Data
+### 1. Preprocess Data
 ```bash
 python -m src.preprocess
 ```
 
-### Step 2: Train Model
+### 2. Train Model
 ```bash
 python -m src.train
 ```
 
-### Step 3: Run Webcam Detection
+### 3. Run Webcam Detection
 ```bash
 python -m src.webcam
 ```
