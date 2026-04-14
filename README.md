@@ -71,19 +71,6 @@ pip install -r requirements.txt
 
 ---
 
-### 4. Prepare Dataset
-Unzip the dataset:
-```bash
-unzip data.zip
-```
-
-Make sure it extracts into:
-```text
-data/raw/train/...
-```
-
----
-
 #  OpenCV Version (Desktop Webcam)
 
 ### Step 1: Preprocess Data
