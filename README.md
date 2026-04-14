@@ -4,19 +4,16 @@ This project performs **real-time facial emotion detection** using a CNN model.
 It supports both:
 -  OpenCV (desktop webcam)
 -  Web browser (FastAPI + frontend)
--  Perform All Instructions From Root Directory
 
 ---
 
 ## 📁 Project Setup and Structure
 
 ```text
-FER_PROJECT/
-├── .vscode/
-├── backend/
+FER-PROJ-2/
+├── api/
 │   ├── __pycache__/
-│   ├── app.py
-│   └── model.py
+│   └── app.py
 ├── data/
 │   ├── processed/
 │   │   ├── train/
@@ -26,22 +23,37 @@ FER_PROJECT/
 │       └── train/
 ├── frontend/
 │   └── index.html
-├── R&D/
-│   ├── 1_exp_emotion_cnn_light_v1.py
-│   └── 2_exp_emotion_customcnn.py
-├── src/
-│   ├── __pycache__/
-│   ├── __init__.py
-│   ├── model.py
-│   ├── preprocess.py
-│   ├── train.py
-│   └── webcam.py
+├── models/
+│   ├── best_emotion_model.keras
+│   └── final_emotion_model.keras
+└── src/
+    ├── __pycache__/
+    ├── data/
+    │   ├── __pycache__/
+    │   ├── __init__.py
+    │   ├── preprocess.py
+    │   └── split.py
+    ├── inference/
+    │   ├── __pycache__/
+    │   ├── __init__.py
+    │   ├── predict.py
+    │   └── webcam.py
+    ├── models/
+    │   ├── __pycache__/
+    │   ├── __init__.py
+    │   ├── evaluate.py
+    │   ├── model.py
+    │   └── train.py
+    ├── utils/
+    │   ├── __init__.py
+    │   └── config.py
+    └── __init__.py
 ├── venv/
-├── best_emotion_model.keras
 ├── Dockerfile
-├── final_emotion_model.keras
 ├── README.md
-└── requirements.txt
+├── requirements.txt
+├── run_pipeline.py
+└── shellscript.sh
 ```
 
 ---
@@ -68,6 +80,19 @@ source venv/bin/activate
 ### 3. Install Requirements
 ```bash
 pip install -r requirements.txt
+```
+
+---
+
+### 4. Prepare Dataset
+Unzip the dataset:
+```bash
+unzip data.zip
+```
+
+Make sure it extracts into:
+```text
+data/raw/train/...
 ```
 
 ---
@@ -105,7 +130,7 @@ python -m src.train
 
 ### Step 3: Start Backend Server
 ```bash
-uvicorn api.app:app --reload
+uvicorn app:app --reload --host 0.0.0.0 --port 8000
 ```
 
 ### Step 4: Launch Frontend
@@ -115,6 +140,19 @@ uvicorn api.app:app --reload
 
 ---
 
+#  Web Browser Version With Shell
+
+### Enable Script Execution
+```bash
+chmod +x shellscript.sh   
+```
+
+### Run Full Pipeline (Preprocess + Train + Launch)
+```bash
+./shellscript.sh
+```
+
+---
 ##  Model Details
 - Input: 48×48 grayscale face images  
 - Architecture: Lightweight CNN  
