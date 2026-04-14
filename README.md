@@ -4,6 +4,7 @@ This project performs **real-time facial emotion detection** using a CNN model.
 It supports both:
 -  OpenCV (desktop webcam)
 -  Web browser (FastAPI + frontend)
+-  Perform All Instructions From Root Directory
 
 ---
 
