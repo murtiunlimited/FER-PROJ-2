@@ -105,8 +105,7 @@ python -m src.train
 
 ### Step 3: Start Backend Server
 ```bash
-cd backend
-uvicorn app:app --reload --host 0.0.0.0 --port 8000
+uvicorn api.app:app --reload
 ```
 
 ### Step 4: Launch Frontend
