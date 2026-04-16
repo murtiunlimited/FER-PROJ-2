@@ -1,8 +1,11 @@
 # src/models/train.py
 import os
 import tensorflow as tf
+import mlflow
+import mlflow.keras
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 from src.models.model import build_light_model
+from src.utils.mlflow_config import setup_mlflow
 
 def train_model():
     # -------------------------
