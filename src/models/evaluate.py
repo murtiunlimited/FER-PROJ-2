@@ -1,8 +1,9 @@
 # src/models/evaluate.py
-
 import os
 import tensorflow as tf
 from sklearn.metrics import classification_report
+from src.utils.mlflow_config import setup_mlflow
+import mlflow
 
 # -------------------------
 # Config
