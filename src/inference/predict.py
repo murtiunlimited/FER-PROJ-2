@@ -14,8 +14,15 @@ CLASS_NAMES = ['Angry','Disgust','Fear','Happy','Sad','Surprise','Neutral']
 # =========================
 # Load model
 # =========================
-model = tf.keras.models.load_model(MODEL_PATH)
+#model = tf.keras.models.load_model(MODEL_PATH)
 
+model = None
+
+def get_model():
+    global model
+    if model is None:
+        model = tf.keras.models.load_model(MODEL_PATH)
+    return model
 # =========================
 # Preprocess face
 # =========================
@@ -30,6 +37,7 @@ def preprocess_face(face_img):
 # Predict emotion
 # =========================
 def predict_emotion(face_img):
+    model = get_model()
     processed = preprocess_face(face_img)
     preds = model.predict(processed, verbose=0)
     class_idx = np.argmax(preds)
