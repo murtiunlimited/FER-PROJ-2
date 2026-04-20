@@ -20,11 +20,11 @@ jobs:
 
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-        pip install pytest  # Ensures pytest is available for the next step
-        pip install "tensorflow<2.16" # This forces Keras 2 logic
-
+              python -m pip install --upgrade pip
+              # Force TensorFlow 2.15 to maintain compatibility with your saved model
+              pip install "tensorflow==2.15.0" 
+              pip install -r requirements.txt
+              pip install pytest
     - name: Run Unit Tests
       # This targets your specific test directory and stops the workflow if they fail
       run: |
