@@ -23,6 +23,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         pip install pytest  # Ensures pytest is available for the next step
+        pip install "tensorflow<2.16" # This forces Keras 2 logic
 
     - name: Run Unit Tests
       # This targets your specific test directory and stops the workflow if they fail
