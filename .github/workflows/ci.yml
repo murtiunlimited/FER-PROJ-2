@@ -27,6 +27,7 @@ jobs:
     - name: Run Unit Tests
       # This targets your specific test directory and stops the workflow if they fail
       run: |
+        export PYTHONPATH=$PYTHONPATH:$(pwd)
         pytest src/tests/
 
     - name: Basic check
