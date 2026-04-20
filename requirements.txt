@@ -1,4 +1,5 @@
 tensorflow
+pandas
 opencv-python
 numpy
 fastapi
@@ -7,3 +8,4 @@ scikit-learn
 tqdm
 python-multipart
 mlflow
+pytest
