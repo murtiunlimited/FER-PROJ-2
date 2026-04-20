@@ -1,5 +1,5 @@
 <!-- frontend/index.html -->
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -10,27 +10,32 @@
             text-align: center;
             background: #f4f4f9;
         }
+
         .video-container {
             position: relative;
             display: inline-block;
             margin-top: 20px;
         }
+
         video {
             border-radius: 10px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
+
         #result {
             margin-top: 20px;
             font-size: 1.5rem;
             font-weight: bold;
             color: #333;
         }
+
         .status {
             color: #888;
             font-size: 0.9rem;
         }
     </style>
 </head>
+
 <body>
     <h1>Emotion AI Live</h1>
 
@@ -38,29 +43,40 @@
         <video id="video" width="640" height="480" autoplay muted></video>
     </div>
 
-    <div id="result">Detecting...</div>
-    <div class="status">Status: <span id="connection">Connecting to Backend...</span></div>
+    <div id="result">Waiting for camera...</div>
+    <div class="status">Status: <span id="connection">Initializing...</span></div>
 
     <script>
         const video = document.getElementById('video');
         const resultDiv = document.getElementById('result');
         const connectionStatus = document.getElementById('connection');
 
-        let isWaiting = false;      // prevent overlapping requests
-        const TARGET_FPS = 15;      // max frames per second
+        let isWaiting = false;
+        const TARGET_FPS = 15;
         const INTERVAL = 1000 / TARGET_FPS;
         let lastTime = 0;
 
-        // Start webcam
-        navigator.mediaDevices.getUserMedia({ video: true })
-            .then(stream => {
-                video.srcObject = stream;
-                connectionStatus.innerText = "Camera Active - Sending Frames";
-            })
-            .catch(err => {
-                connectionStatus.innerText = "Camera Error: " + err.message;
-            });
+        const API_BASE = "http://localhost:8000";
 
+        // =========================
+        // Backend check
+        // =========================
+        async function checkBackend() {
+            try {
+                const res = await fetch(`${API_BASE}/health`);
+                if (res.ok) {
+                    connectionStatus.innerText = "Backend Connected";
+                    return true;
+                }
+            } catch (err) {
+                connectionStatus.innerText = "Backend Offline";
+            }
+            return false;
+        }
+
+        // =========================
+        // Main loop
+        // =========================
         async function mainLoop(timestamp) {
             if (timestamp - lastTime >= INTERVAL && !isWaiting) {
                 lastTime = timestamp;
@@ -69,12 +85,16 @@
             requestAnimationFrame(mainLoop);
         }
 
+        // =========================
+        // Capture + Send frame
+        // =========================
         async function captureAndSend() {
             isWaiting = true;
 
             const canvas = document.createElement('canvas');
             canvas.width = 48;
             canvas.height = 48;
+
             const ctx = canvas.getContext('2d');
             ctx.drawImage(video, 0, 0, 48, 48);
 
@@ -83,24 +103,63 @@
                 formData.append('file', blob, 'frame.jpg');
 
                 try {
-                    const response = await fetch('http://localhost:8000/predict', {
+                    const response = await fetch(`${API_BASE}/predict`, {
                         method: 'POST',
                         body: formData
                     });
+
+                    if (!response.ok) {
+                        resultDiv.innerText = "Prediction error";
+                        return;
+                    }
+
                     const data = await response.json();
-                    resultDiv.innerText = "Emotion: " + data.emotion;
-                } catch (error) {
-                    resultDiv.innerText = "Backend Offline";
-                    console.error("Backend unreachable");
+
+                    resultDiv.innerText =
+                        `Emotion: ${data.emotion} (${data.latency_ms} ms)`;
+
+                    connectionStatus.innerText = "Live";
+
+                } catch (err) {
+                    resultDiv.innerText = "Backend unreachable";
+                    connectionStatus.innerText = "Disconnected";
                 } finally {
                     isWaiting = false;
                 }
-            }, 'image/jpeg', 0.6); // 60% quality is fine for 48x48
+            }, 'image/jpeg', 0.6);
         }
 
-        video.onplay = () => {
-            requestAnimationFrame(mainLoop);
-        };
+        // =========================
+        // Start pipeline (FIXED ENTRY POINT)
+        // =========================
+        async function start() {
+            resultDiv.innerText = "Checking backend...";
+            const ok = await checkBackend();
+
+            if (ok) {
+                resultDiv.innerText = "Running...";
+                requestAnimationFrame(mainLoop);
+            } else {
+                resultDiv.innerText = "Backend not ready";
+            }
+        }
+
+        // =========================
+        // Camera setup
+        // =========================
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => {
+                video.srcObject = stream;
+
+                video.onloadedmetadata = () => {
+                    video.play();
+                    start(); // 🔥 IMPORTANT FIX
+                };
+            })
+            .catch(err => {
+                connectionStatus.innerText = "Camera Error: " + err.message;
+                resultDiv.innerText = "Camera failed";
+            });
     </script>
 </body>
 </html>
