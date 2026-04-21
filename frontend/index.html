@@ -2,164 +2,239 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Real-Time Emotion Detection</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            text-align: center;
-            background: #f4f4f9;
-        }
+<meta charset="UTF-8">
+<title>Emotion AI Live</title>
 
-        .video-container {
-            position: relative;
-            display: inline-block;
-            margin-top: 20px;
-        }
+<style>
+    body {
+        margin: 0;
+        font-family: 'Segoe UI', Tahoma, sans-serif;
+        background: #0b0f14;
+        color: #e6e6e6;
+        text-align: center;
+    }
 
-        video {
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        }
+    h1 {
+        margin-top: 20px;
+        font-weight: 600;
+        color: #ffffff;
+    }
 
-        #result {
-            margin-top: 20px;
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #333;
-        }
+    .video-container {
+        position: relative;
+        display: inline-block;
+        margin-top: 20px;
+    }
 
-        .status {
-            color: #888;
-            font-size: 0.9rem;
-        }
-    </style>
+    video {
+        border-radius: 14px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+        filter: brightness(0.85) contrast(1.1);
+    }
+
+    #result {
+        margin-top: 18px;
+        font-size: 1.6rem;
+        font-weight: 600;
+        color: #ffffff;
+        min-height: 40px;
+    }
+
+    .status-bar {
+        margin-top: 10px;
+        font-size: 0.9rem;
+        color: #a0a0a0;
+    }
+
+    .pill {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 999px;
+        font-size: 0.85rem;
+        margin-top: 10px;
+        background: #1a2230;
+        color: #cfd6e4;
+    }
+
+    .controls {
+        margin-top: 15px;
+    }
+
+    button {
+        background: #1f2937;
+        border: 1px solid #2d3a4d;
+        color: white;
+        padding: 8px 14px;
+        border-radius: 8px;
+        cursor: pointer;
+        margin: 0 5px;
+        transition: 0.2s;
+    }
+
+    button:hover {
+        background: #2a3a52;
+    }
+
+    .glow {
+        animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+        0% { opacity: 1; }
+        50% { opacity: 0.6; }
+        100% { opacity: 1; }
+    }
+</style>
 </head>
 
 <body>
-    <h1>Emotion AI Live</h1>
 
-    <div class="video-container">
-        <video id="video" width="640" height="480" autoplay muted></video>
-    </div>
+<h1>Emotion AI Live</h1>
 
-    <div id="result">Waiting for camera...</div>
-    <div class="status">Status: <span id="connection">Initializing...</span></div>
+<div class="video-container">
+    <video id="video" width="640" height="480" autoplay muted></video>
+</div>
 
-    <script>
-        const video = document.getElementById('video');
-        const resultDiv = document.getElementById('result');
-        const connectionStatus = document.getElementById('connection');
+<div id="result">Initializing...</div>
 
-        let isWaiting = false;
-        const TARGET_FPS = 15;
-        const INTERVAL = 1000 / TARGET_FPS;
-        let lastTime = 0;
+<div class="status-bar">
+    Status: <span id="connection" class="pill">Starting</span>
+</div>
 
-        const API_BASE = "http://localhost:8000";
+<div class="controls">
+    <button onclick="setSpeed(2)">Slow (2 FPS)</button>
+    <button onclick="setSpeed(3)">Balanced (3 FPS)</button>
+    <button onclick="setSpeed(5)">Fast (5 FPS)</button>
+</div>
 
-        // =========================
-        // Backend check
-        // =========================
-        async function checkBackend() {
-            try {
-                const res = await fetch(`${API_BASE}/health`);
-                if (res.ok) {
-                    connectionStatus.innerText = "Backend Connected";
-                    return true;
-                }
-            } catch (err) {
-                connectionStatus.innerText = "Backend Offline";
-            }
-            return false;
+<script>
+const video = document.getElementById('video');
+const resultDiv = document.getElementById('result');
+const connectionStatus = document.getElementById('connection');
+
+let isWaiting = false;
+let TARGET_FPS = 3;
+let INTERVAL = 1000 / TARGET_FPS;
+let lastTime = 0;
+
+const API_BASE = "http://localhost:8000";
+
+// -------------------------
+// Backend check
+// -------------------------
+async function checkBackend() {
+    try {
+        const res = await fetch(`${API_BASE}/health`);
+        if (res.ok) {
+            connectionStatus.innerText = "Connected";
+            connectionStatus.style.background = "#1f3b2c";
+            return true;
         }
+    } catch {
+        connectionStatus.innerText = "Offline";
+        connectionStatus.style.background = "#3b1f1f";
+    }
+    return false;
+}
 
-        // =========================
-        // Main loop
-        // =========================
-        async function mainLoop(timestamp) {
-            if (timestamp - lastTime >= INTERVAL && !isWaiting) {
-                lastTime = timestamp;
-                await captureAndSend();
-            }
-            requestAnimationFrame(mainLoop);
-        }
+// -------------------------
+// FPS control
+// -------------------------
+function setSpeed(fps) {
+    TARGET_FPS = fps;
+    INTERVAL = 1000 / TARGET_FPS;
+    resultDiv.innerText = `Speed set to ${fps} FPS`;
+}
 
-        // =========================
-        // Capture + Send frame
-        // =========================
-        async function captureAndSend() {
-            isWaiting = true;
+// -------------------------
+// Capture frame
+// -------------------------
+async function captureAndSend() {
+    if (isWaiting) return;
+    isWaiting = true;
 
-            const canvas = document.createElement('canvas');
-            canvas.width = 48;
-            canvas.height = 48;
+    const canvas = document.createElement('canvas');
+    canvas.width = 64;
+    canvas.height = 64;
 
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(video, 0, 0, 48, 48);
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(video, 0, 0, 64, 64);
 
-            canvas.toBlob(async (blob) => {
-                const formData = new FormData();
-                formData.append('file', blob, 'frame.jpg');
+    canvas.toBlob(async (blob) => {
+        const formData = new FormData();
+        formData.append('file', blob, 'frame.jpg');
 
-                try {
-                    const response = await fetch(`${API_BASE}/predict`, {
-                        method: 'POST',
-                        body: formData
-                    });
-
-                    if (!response.ok) {
-                        resultDiv.innerText = "Prediction error";
-                        return;
-                    }
-
-                    const data = await response.json();
-
-                    resultDiv.innerText =
-                        `Emotion: ${data.emotion} (${data.latency_ms} ms)`;
-
-                    connectionStatus.innerText = "Live";
-
-                } catch (err) {
-                    resultDiv.innerText = "Backend unreachable";
-                    connectionStatus.innerText = "Disconnected";
-                } finally {
-                    isWaiting = false;
-                }
-            }, 'image/jpeg', 0.6);
-        }
-
-        // =========================
-        // Start pipeline (FIXED ENTRY POINT)
-        // =========================
-        async function start() {
-            resultDiv.innerText = "Checking backend...";
-            const ok = await checkBackend();
-
-            if (ok) {
-                resultDiv.innerText = "Running...";
-                requestAnimationFrame(mainLoop);
-            } else {
-                resultDiv.innerText = "Backend not ready";
-            }
-        }
-
-        // =========================
-        // Camera setup
-        // =========================
-        navigator.mediaDevices.getUserMedia({ video: true })
-            .then(stream => {
-                video.srcObject = stream;
-
-                video.onloadedmetadata = () => {
-                    video.play();
-                    start(); // 🔥 IMPORTANT FIX
-                };
-            })
-            .catch(err => {
-                connectionStatus.innerText = "Camera Error: " + err.message;
-                resultDiv.innerText = "Camera failed";
+        try {
+            const response = await fetch(`${API_BASE}/predict`, {
+                method: 'POST',
+                body: formData
             });
-    </script>
+
+            if (!response.ok) {
+                resultDiv.innerText = "Prediction error";
+                isWaiting = false;
+                return;
+            }
+
+            const data = await response.json();
+
+            resultDiv.innerText = `Emotion: ${data.emotion}`;
+            connectionStatus.innerText = `Live (${data.latency_ms} ms)`;
+            connectionStatus.classList.add("glow");
+
+            setTimeout(() => connectionStatus.classList.remove("glow"), 500);
+
+        } catch (err) {
+            resultDiv.innerText = "Disconnected";
+            connectionStatus.innerText = "Error";
+        } finally {
+            isWaiting = false;
+        }
+    }, 'image/jpeg', 0.6);
+}
+
+// -------------------------
+// Loop
+// -------------------------
+function loop(timestamp) {
+    if (timestamp - lastTime > INTERVAL) {
+        lastTime = timestamp;
+        captureAndSend();
+    }
+    requestAnimationFrame(loop);
+}
+
+// -------------------------
+// Start
+// -------------------------
+async function start() {
+    const ok = await checkBackend();
+
+    if (ok) {
+        resultDiv.innerText = "Running...";
+        requestAnimationFrame(loop);
+    } else {
+        resultDiv.innerText = "Backend not ready";
+    }
+}
+
+// -------------------------
+// Camera
+// -------------------------
+navigator.mediaDevices.getUserMedia({ video: true })
+.then(stream => {
+    video.srcObject = stream;
+
+    video.onloadedmetadata = () => {
+        video.play();
+        start();
+    };
+})
+.catch(err => {
+    resultDiv.innerText = "Camera error";
+    connectionStatus.innerText = err.message;
+});
+</script>
+
 </body>
 </html>
