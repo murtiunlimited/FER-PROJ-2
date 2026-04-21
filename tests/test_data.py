@@ -81,35 +81,24 @@ def test_image_readable():
 # =========================
 # Preprocessing function runs
 # =========================
-def test_preprocess_runs(tmp_path):
-    # Skip if no raw data
+def test_processed_output_created():
     if not os.path.exists(RAW_TRAIN_DIR):
         pytest.skip("Raw data not available")
 
-    output_dir = tmp_path / "processed"
+    preprocess_and_save()
 
-    try:
-        
-        preprocess_and_save(
-            RAW_TRAIN_DIR,
-            str(output_dir)
-        )
-    except Exception as e:
-        pytest.fail(f"Preprocessing failed: {e}")
+    assert os.path.exists(PROCESSED_TRAIN_DIR)
+    assert os.path.exists(PROCESSED_VAL_DIR)
 
 
 # =========================
 # Processed output structure
 # =========================
-def test_processed_output_created(tmp_path):
+def test_processed_output_created():
     if not os.path.exists(RAW_TRAIN_DIR):
         pytest.skip("Raw data not available")
 
-    output_dir = tmp_path / "processed"
+    preprocess_and_save()
 
-    preprocess_and_save(
-        RAW_TRAIN_DIR,
-        str(output_dir)
-    )
-
-    assert os.path.exists(output_dir)
+    assert os.path.exists(PROCESSED_TRAIN_DIR)
+    assert os.path.exists(PROCESSED_VAL_DIR)
