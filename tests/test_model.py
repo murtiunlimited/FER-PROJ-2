@@ -4,6 +4,26 @@ import pytest
 from src.models.model import build_light_model
 from src.inference.predict import IMG_SIZE, CLASS_NAMES
 
+# =========================
+# Model can compile and train one step
+# =========================
+def test_train_step():
+    model = build_light_model()
+
+    model.compile(
+        optimizer="adam",
+        loss="categorical_crossentropy"
+    )
+
+    x = np.random.rand(2, IMG_SIZE, IMG_SIZE, 1).astype("float32")
+    y = np.zeros((2, len(CLASS_NAMES)))
+    y[:, 0] = 1  # fake one-hot labels
+
+    history = model.fit(x, y, epochs=1, verbose=0)
+
+    assert history is not None
+
+
 
 # =========================
 # Invalid input should fail
