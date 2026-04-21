@@ -16,7 +16,8 @@ FER-PROJ-2/
 │   ├── workflows/
 │   ├── ci.yml
 ├── api/
-│   └── app.py
+│   ├── app.py
+│   ├── __init__.py
 ├── data/
 │   ├── processed/
 │   │   ├── train/
@@ -26,6 +27,10 @@ FER-PROJ-2/
 │       └── train/
 ├── frontend/
 │   └── index.html
+├── tests/
+│   ├── test_api.py
+│   ├── test_imports.py
+│   ├── test_model.py
 ├── models/
 │   ├── best_emotion_model.keras
 │   └── final_emotion_model.keras
@@ -34,7 +39,6 @@ FER-PROJ-2/
     │   ├── __pycache__/
     │   ├── __init__.py
     │   ├── preprocess.py
-    │   └── split.py
     ├── inference/
     │   ├── __init__.py
     │   ├── predict.py
