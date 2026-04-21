@@ -1,4 +1,5 @@
 import os
+import cv2
 import pytest
 from src.data.preprocess import preprocess_and_save
 
