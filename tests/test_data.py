@@ -85,3 +85,21 @@ def test_image_readable():
                 return  # test one image only
 
     pytest.skip("No readable images found")
+
+# =========================
+# Preprocessing function runs
+# =========================
+def test_preprocess_runs(tmp_path):
+    # Skip if no raw data
+    if not os.path.exists(RAW_TRAIN_DIR):
+        pytest.skip("Raw data not available")
+
+    output_dir = tmp_path / "processed"
+
+    try:
+        preprocess_and_save(
+            input_dir=RAW_TRAIN_DIR,
+            output_dir=str(output_dir)
+        )
+    except Exception as e:
+        pytest.fail(f"Preprocessing failed: {e}")
