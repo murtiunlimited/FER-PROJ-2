@@ -27,3 +27,14 @@ def test_model_shapes():
     
     # Output should match number of classes
     assert model.output_shape[-1] == len(CLASS_NAMES)
+
+# =========================
+# Forward pass (single sample)
+# =========================
+def test_forward_pass_single():
+    model = build_light_model()
+
+    x = np.random.rand(1, IMG_SIZE, IMG_SIZE, 1).astype("float32")
+    y = model(x)
+
+    assert y.shape == (1, len(CLASS_NAMES))
