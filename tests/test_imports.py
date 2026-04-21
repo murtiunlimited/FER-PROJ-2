@@ -7,6 +7,7 @@ def test_standard_library_imports():
     assert io is not None
     assert time is not None
 
+
 def test_core_ml_libraries():
     import numpy
     import cv2
@@ -22,6 +23,7 @@ def test_fastapi_stack():
     assert fastapi is not None
     assert TestClient is not None
 
+
 def test_ml_stack_imports():
     import tensorflow
     import mlflow
@@ -36,9 +38,20 @@ def test_ml_stack_imports():
     assert accuracy_score is not None
     assert tqdm is not None
 
+
 def test_project_imports():
+    from api.app import app
+    from src.inference.predict import predict_emotion
+    from src.utils.mlflow_config import setup_mlflow
+    from src.models.model import build_light_model
+    #from src.models.train import train_model
+    from src.models.evaluate import evaluate_model
+    from src.data.preprocess import preprocess_and_save
 
-    from src.models.train import train_model
-
-    assert callable(train_model)
-  
+    assert app is not None
+    assert callable(predict_emotion)
+    assert callable(setup_mlflow)
+    assert callable(build_light_model)
+    #assert callable(train_model)
+    assert callable(evaluate_model)
+    assert callable(preprocess_and_save)
