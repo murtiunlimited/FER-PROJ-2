@@ -19,6 +19,9 @@ def test_data_directories_exist():
     assert os.path.exists("data/raw")
     assert os.path.exists("data/processed")
 
+# =========================
+# Raw data structure
+# =========================
 def test_raw_data_structure():
     assert os.path.exists(RAW_TRAIN_DIR)
     assert os.path.exists(RAW_TEST_DIR)
