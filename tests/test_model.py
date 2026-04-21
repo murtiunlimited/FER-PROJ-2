@@ -6,6 +6,17 @@ from src.inference.predict import IMG_SIZE, CLASS_NAMES
 
 
 # =========================
+# Invalid input should fail
+# =========================
+def test_invalid_input_shape():
+    model = build_light_model()
+
+    bad_input = np.random.rand(1, 10, 10, 1).astype("float32")
+
+    with pytest.raises(Exception):
+        model(bad_input)
+        
+# =========================
 # Model builds correctly
 # =========================
 def test_model_build():
