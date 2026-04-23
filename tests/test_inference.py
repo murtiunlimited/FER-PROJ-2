@@ -29,3 +29,15 @@ def test_get_model_lazy_loading(monkeypatch):
     model2 = p.get_model()
 
     assert model1 is model2  # same cached model
+
+
+# =========================
+# Preprocessing
+# =========================
+def test_preprocess_face_shape():
+    img = create_dummy_face()
+
+    processed = preprocess_face(img)
+
+    assert processed.shape == (1, 48, 48, 1)
+    assert processed.dtype in [np.float32, np.float64]
