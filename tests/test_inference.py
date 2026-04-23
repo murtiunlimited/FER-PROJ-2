@@ -22,3 +22,10 @@ def test_get_model_lazy_loading(monkeypatch):
             def predict(self, x, verbose=0):
                 return np.array([[0.1] * len(CLASS_NAMES)])
         return FakeModel()
+    
+    monkeypatch.setattr("tensorflow.keras.models.load_model", fake_load)
+
+    model1 = p.get_model()
+    model2 = p.get_model()
+
+    assert model1 is model2  # same cached model
