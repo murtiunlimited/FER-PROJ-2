@@ -50,3 +50,23 @@ def test_preprocess_normalization():
     assert np.max(processed) <= 1.0
     assert np.min(processed) >= 0.0
 
+# =========================
+# Prediction - mocked model
+# =========================
+def test_predict_emotion(monkeypatch):
+    """Test full pipeline with mocked model"""
+
+    class FakeModel:
+        def predict(self, x, verbose=0):
+            # always return class 3 (Happy)
+            out = np.zeros((1, len(CLASS_NAMES)))
+            out[0][3] = 1.0
+            return out
+
+    monkeypatch.setattr("src.inference.predict.get_model", lambda: FakeModel())
+
+    img = create_dummy_face()
+
+    result = predict_emotion(img)
+
+    assert result == "Happy"
