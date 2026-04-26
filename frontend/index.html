@@ -8,7 +8,7 @@
     <style>
         :root {
             --bg-color: #05070a;
-            --accent-color: #00f2ff; /* Default Cyber Blue */
+            --accent-color: #00f2ff;
             --glass: rgba(255, 255, 255, 0.03);
             --border: rgba(255, 255, 255, 0.1);
             --text-main: #e0e6ed;
@@ -31,7 +31,6 @@
             transition: background 0.8s ease;
         }
 
-        /* Ambient background glow that matches detected emotion */
         body.happy { --accent-color: #00ff88; }
         body.sad { --accent-color: #0066ff; }
         body.angry { --accent-color: #ff3333; }
@@ -76,20 +75,6 @@
             height: 480px;
             object-fit: cover;
             filter: grayscale(20%) contrast(1.1);
-        }
-
-        /* Scanning Line Effect */
-        .scan-line {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background: var(--accent-color);
-            box-shadow: 0 0 15px var(--accent-color);
-            opacity: 0.5;
-            animation: scan 3s linear infinite;
-            z-index: 2;
         }
 
         @keyframes scan {
@@ -206,7 +191,7 @@
 <body>
 
 <header>
-    <h1>Neural Emotion Processor v3.0</h1>
+    <h1> Facial Emotion Recognition v2.0</h1>
 </header>
 
 <div class="main-container">
