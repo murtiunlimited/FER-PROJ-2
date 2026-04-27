@@ -6,18 +6,16 @@ services:
     region: oregon
 
     buildCommand: |
-      apt-get update && apt-get install -y \
-        build-essential \
-        cmake \
-        git \
-        wget \
-        libgl1 \
-        libglib2.0-0 && \
-      pip install --upgrade pip && \
-      pip install --no-cache-dir -r requirements.txt
+      pip install --upgrade pip
+      pip install -r requirements.txt
+      pip install -r requirements-dev.txt
 
     startCommand: uvicorn api.app:app --host 0.0.0.0 --port $PORT
 
     envVars:
       - key: PYTHON_VERSION
         value: 3.11
+      - key: PYTHONDONTWRITEBYTECODE
+        value: "1"
+      - key: PYTHONUNBUFFERED
+        value: "1"
