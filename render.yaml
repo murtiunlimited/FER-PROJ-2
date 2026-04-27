@@ -1,4 +1,6 @@
 services:
+  - type: web
+    name: fer-proj-api
 
     buildCommand:
 
