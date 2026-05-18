@@ -63,7 +63,7 @@ FER-PROJ-2/
 ├── Dockerfile
 ├── README.md
 ├── render.yaml
-├── .env (MAKE SURE TO ADD IN GITIGNORE)
+├── .env (MAKE SURE TO ADD IN GITIGNORE FILE)
 ├── .gitattributes
 ├── requirements.txt
 ├── run_pipeline.py # if user prefers web version by python script
