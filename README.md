@@ -28,6 +28,8 @@ FER-PROJ-2/
 │       └── train/
 ├── frontend/
 │   └── index.html
+│   ├── ai.html
+│   ├── realtime.html
 ├── tests/
 │   ├── test_api.py
 │   ├── test_data.py
@@ -46,6 +48,9 @@ FER-PROJ-2/
     │   ├── __init__.py
     │   ├── predict.py
     │   └── webcam.py # if user prefers openCV
+    ├── llm/
+    │   ├── __init__.py
+    │   ├── groq_client.py
     ├── models/
     │   ├── __init__.py
     │   ├── evaluate.py  # MLFLOW included
@@ -57,6 +62,9 @@ FER-PROJ-2/
     └── __init__.py
 ├── Dockerfile
 ├── README.md
+├── render.yaml
+├── .env (MAKE SURE TO ADD IN GITIGNORE)
+├── .gitattributes
 ├── requirements.txt
 ├── run_pipeline.py # if user prefers web version by python script
 └── shellscript.sh  # if user prefers web version by shell script
